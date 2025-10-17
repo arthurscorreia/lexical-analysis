@@ -2,6 +2,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* Enumeração de Tokens Refinada */
 typedef enum {
@@ -9,7 +10,7 @@ typedef enum {
 
     // Palavras-chave
     T_SE = 258, T_SENAO, T_ENQUANTO, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_RETORNO,
-    T_CARACTERE_KEYWORD,
+    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
@@ -31,6 +32,7 @@ typedef enum {
 } TokenType;
 
 int yylval;
+char yyltext[256]; // Auxiliar
 
 #define MAX_SYMBOLS 100
 char *symbol_table[MAX_SYMBOLS];
@@ -60,12 +62,11 @@ DIGITO         [0-9]
 LETRA          [a-zA-Z_]
 ID             {LETRA}({LETRA}|{DIGITO})*
 INTEIRO        {DIGITO}+
-DECIMAL        {DIGITO}+\.{DIGITO}*
+DECIMAL        {DIGITO}+\.{DIGITO}+
 COMENTARIO_LINHA \/\/[^\n]*
 COMENTARIO_BLOCO \/\*([^*]|\*+[^*/])*\*+\/
 PALAVRA_LITERAL \"[^"]*\"
 CARACTERE_LITERAL   '[^']'
-
 
 /* Seção de Regras */
 %%
@@ -81,11 +82,12 @@ CARACTERE_LITERAL   '[^']'
 "decimal"      { return T_DECIMAL_KEYWORD; }
 "retorno"      { return T_RETORNO; }
 "caractere"    { return T_CARACTERE_KEYWORD; }
+"palavra"      { return T_PALAVRA_KEYWORD; }
 
 {INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO; }
-{DECIMAL}        { return T_DECIMAL; }
-{PALAVRA_LITERAL} { return T_PALAVRA; }
-{CARACTERE_LITERAL} { return T_LITERAL_CARACTERE; }
+{DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL; } // Copia de yytext para o auxiliar yyltext
+{PALAVRA_LITERAL} { strcpy(yyltext, yytext); return T_PALAVRA; }
+{CARACTERE_LITERAL} { strcpy(yyltext, yytext); return T_LITERAL_CARACTERE; }
 
 {ID}           { yylval = get_symbol_position(yytext); if (yylval != -1) return T_ID; /* Ignora o ID se a tabela estiver cheia */ }
 
@@ -123,7 +125,7 @@ int main(int argc, char **argv) {
             return 1;
         }
     } else {
-        // Permite ler da entrada padrão se nenhum arquivo for fornecido
+         // Permite ler da entrada padrão se nenhum arquivo for fornecido
         yyin = stdin;
     }
 
@@ -132,41 +134,41 @@ int main(int argc, char **argv) {
         // Usando switch para uma saída mais detalhada e correta
         switch (token_id) {
             // Palavras-chave
-            case T_SE:            printf("Token: %d (T_SE)          | Lexema: %s\n", token_id, yytext); break;
-            case T_SENAO:          printf("Token: %d (T_SENAO)        | Lexema: %s\n", token_id, yytext); break;
-            case T_ENQUANTO:         printf("Token: %d (T_ENQUANTO)       | Lexema: %s\n", token_id, yytext); break;
-            case T_INTEIRO_KEYWORD:   printf("Token: %d (T_INTEIRO_KEYWORD) | Lexema: %s\n", token_id, yytext); break;
-            case T_DECIMAL_KEYWORD: printf("Token: %d (T_DECIMAL_KEYWORD)| Lexema: %s\n", token_id, yytext); break;
-            case T_RETORNO:        printf("Token: %d (T_RETORNO)      | Lexema: %s\n", token_id, yytext); break;
-            case T_CARACTERE_KEYWORD:  printf("Token: %d (T_CARACTERE_KEYWORD)| Lexema: %s\n", token_id, yytext); break;
+            case T_SE:                printf("<se> "); break;
+            case T_SENAO:             printf("<senao> "); break;
+            case T_ENQUANTO:          printf("<enquanto> "); break;
+            case T_INTEIRO_KEYWORD:   printf("<inteiro> "); break;
+            case T_DECIMAL_KEYWORD:   printf("<decimal> "); break;
+            case T_RETORNO:           printf("<retorno> "); break;
+            case T_CARACTERE_KEYWORD: printf("<caractere> "); break;
+            case T_PALAVRA_KEYWORD:   printf("<palavra> "); break;
 
             // Identificadores e Literais
-            case T_ID:            printf("Token: %d (T_ID)          | Posição: %d, Lexema: %s\n", token_id, yylval, symbol_table[yylval]); break;
-            case T_INTEIRO:       printf("Token: %d (T_INTEIRO)     | Valor: %d\n", token_id, yylval); break;
-            case T_DECIMAL:         printf("Token: %d (T_DECIMAL)       | Lexema: %s\n", token_id, yytext); break;
-            case T_PALAVRA:        printf("Token: %d (T_PALAVRA)      | Lexema: %s\n", token_id, yytext); break;
-            case T_LITERAL_CARACTERE:  printf("Token: %d (T_LITERAL_CARACTERE)| Lexema: %s\n", token_id, yytext); break;
+            case T_ID:                printf("<id, %d> ", yylval); break;
+            case T_INTEIRO:           printf("<inteiro, %d> ", yylval); break;
+            case T_DECIMAL:           printf("<decimal, %s> ", yyltext); break;
+            case T_PALAVRA:           printf("<palavra, %s> ", yyltext); break;
+            case T_LITERAL_CARACTERE: printf("<caractere, %s> ", yyltext); break;
 
-            // Operadores
-            case T_OP_IGUALDADE:  printf("Token: %d (T_OP_IGUALDADE)| Lexema: %s\n", token_id, yytext); break;
-            case T_OP_DIFERENTE:  printf("Token: %d (T_OP_DIFERENTE)| Lexema: %s\n", token_id, yytext); break;
-            case T_OP_MENOR:      printf("Token: %d (T_OP_MENOR)    | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_MAIOR:      printf("Token: %d (T_OP_MAIOR)    | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_MENOR_IGUAL:printf("Token: %d (T_OP_MENOR_IGUAL)| Lexema: %s\n", token_id, yytext); break;
-            case T_OP_MAIOR_IGUAL:printf("Token: %d (T_OP_MAIOR_IGUAL)| Lexema: %s\n", token_id, yytext); break;
-            case T_OP_SOMA:       printf("Token: %d (T_OP_SOMA)     | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_SUB:        printf("Token: %d (T_OP_SUB)      | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_MULT:       printf("Token: %d (T_OP_MULT)     | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_DIV:        printf("Token: %d (T_OP_DIV)      | Lexema: %s\n", token_id, yytext); break;
-            case T_OP_ATRIBUICAO: printf("Token: %d (T_OP_ATRIBUICAO)| Lexema: %s\n", token_id, yytext); break;
+            // Operadores e separadores
+            case T_OP_IGUALDADE:      printf("<==> "); break;
+            case T_OP_DIFERENTE:      printf("<!=> "); break;
+            case T_OP_MENOR:          printf("<<> "); break;
+            case T_OP_MAIOR:          printf("<>> "); break;
+            case T_OP_MENOR_IGUAL:    printf("<= "); break;
+            case T_OP_MAIOR_IGUAL:    printf(">= "); break;
+            case T_OP_SOMA:           printf("<+> "); break;
+            case T_OP_SUB:            printf("<-> "); break;
+            case T_OP_MULT:           printf("<*> "); break;
+            case T_OP_DIV:            printf("</> "); break;
+            case T_OP_ATRIBUICAO:     printf("<=> "); break;
 
-            // Separadores
-            case T_PONTO_VIRGULA:  printf("Token: %d (T_PONTO_VIRGULA)| Lexema: %s\n", token_id, yytext); break;
-            case T_VIRGULA:        printf("Token: %d (T_VIRGULA)      | Lexema: %s\n", token_id, yytext); break;
-            case T_PARENTESES_ESQ: printf("Token: %d (T_PARENTESES_ESQ)| Lexema: %s\n", token_id, yytext); break;
-            case T_PARENTESES_DIR: printf("Token: %d (T_PARENTESES_DIR)| Lexema: %s\n", token_id, yytext); break;
-            case T_CHAVES_ESQ:     printf("Token: %d (T_CHAVES_ESQ)   | Lexema: %s\n", token_id, yytext); break;
-            case T_CHAVES_DIR:     printf("Token: %d (T_CHAVES_DIR)   | Lexema: %s\n", token_id, yytext); break;
+            case T_PONTO_VIRGULA:     printf("<;> "); break;
+            case T_VIRGULA:           printf("<,> "); break;
+            case T_PARENTESES_ESQ:    printf("<(> "); break;
+            case T_PARENTESES_DIR:    printf("<)> "); break;
+            case T_CHAVES_ESQ:        printf("<{> "); break;
+            case T_CHAVES_DIR:        printf("<}> "); break;
 
             case T_ERRO:
                 // A mensagem de erro já foi impressa para stderr
@@ -190,8 +192,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < symbol_count; i++) {
         free(symbol_table[i]);
     }
-    
-    // Fecha o arquivo se ele foi aberto
+
     if (yyin != stdin) {
         fclose(yyin);
     }
