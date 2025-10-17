@@ -1,74 +1,58 @@
-
+/* Seção de Definições em C */
 %{
 #include <stdio.h>
 #include <string.h>
 
-/* Adriano Maia - Para integração com o Bison/Yacc, os tokens seriam definidos
-   em um arquivo de cabeçalho compartilhado (ex: y.tab.h).
-   Por enquanto, definimos aqui. */
-
+/* Enumeração de Tokens Refinada */
 typedef enum {
-    T_IF = 258,
-    T_ELSE = 259,
-    T_WHILE = 260,
-    T_FOR = 261,
-    T_ID = 262,
-    T_INTEGER = 263,
-    T_FLOAT = 264,
-    T_RETURN = 265,
-    T_OP_SOMA = 265,
-    T_OP_ATRIBUICAO = 266,
-    T_OP_SUBTRACAO = 267,
-    T_OP_MULTIPLICACAO = 268,
-    T_OP_DIVISAO = 269,
-    T_OP_IGUALDADE = 270,
-    T_OP_MAIOR = 271,
-    T_OP_MAIOR_IGUAL = 272,
-    T_OP_MENOR = 273,
-    T_OP_MENOR_IGUAL = 274,
-    T_OP_DIFERENTE = 275,
-    T_TFLOAT = 276,
-    T_TINT = 277,
-    T_SEP_PONTOVIRGULA = 277,
-    T_SEP_VIRGULA = 278,
-    T_SEP_PARENTESES_ESQ = 279,
-    T_SEP_PARENTESES_DIR = 280,
-    T_SEP_CHAVES_ESQ = 281,
-    T_SEP_CHAVES_DIR = 282,
-    T_STRING = 283,
-    T_EOF = 284,
-    T_UNKNOWN = 285
-    
-} TokenType;
+    T_EOF = 0,
 
-/* yylval é a variável global usada pelo Flex e Bison para trocar
-   valores. Em um compilador real, isso seria uma 'union' para
-   suportar diferentes tipos de dados (inteiros, strings, etc.). */
+    // Palavras-chave
+    T_SE = 258, T_SENAO, T_ENQUANTO, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_RETORNO,
+    T_CARACTERE_KEYWORD,
+
+    // Identificadores e Literais
+    T_ID,
+    T_INTEIRO,
+    T_DECIMAL,
+    T_PALAVRA,
+    T_LITERAL_CARACTERE,
+
+    // Operadores
+    T_OP_IGUALDADE, T_OP_DIFERENTE, T_OP_MENOR, T_OP_MAIOR, T_OP_MENOR_IGUAL,
+    T_OP_MAIOR_IGUAL, T_OP_SOMA, T_OP_SUB, T_OP_MULT, T_OP_DIV, T_OP_ATRIBUICAO,
+
+    // Separadores
+    T_PONTO_VIRGULA, T_VIRGULA, T_PARENTESES_ESQ, T_PARENTESES_DIR,
+    T_CHAVES_ESQ, T_CHAVES_DIR,
+
+    // Erro
+    T_ERRO
+} TokenType;
 
 int yylval;
 
-/* Tabela de Símbolos (baseada em table.l) */
 #define MAX_SYMBOLS 100
 char *symbol_table[MAX_SYMBOLS];
 int symbol_count = 0;
 
-// Contador de linhas
-int line_count = 1;
-
-// Função para obter a posição de um identificador na tabela de símbolos
 int get_symbol_position(const char *id) {
     for (int i = 0; i < symbol_count; i++) {
         if (strcmp(symbol_table[i], id) == 0) {
             return i;
         }
     }
-    // Adiciona o novo identificador se não for encontrado e retorna a nova posição
-    symbol_table[symbol_count] = strdup(id);
-    return symbol_count++;
+    // Adiciona uma verificação para não estourar a tabela de símbolos
+    if (symbol_count < MAX_SYMBOLS) {
+        symbol_table[symbol_count] = strdup(id);
+        return symbol_count++;
+    } else {
+        fprintf(stderr, "Erro: Tabela de símbolos cheia!\n");
+        return -1; // Retorna um índice inválido
+    }
 }
 %}
 
-/* Opções do Flex */
 %option noyywrap
 
 /* Definições de Expressões Regulares (apelidos) */
@@ -76,125 +60,124 @@ DIGITO         [0-9]
 LETRA          [a-zA-Z_]
 ID             {LETRA}({LETRA}|{DIGITO})*
 INTEIRO        {DIGITO}+
-FLOAT          {DIGITO}+\.{DIGITO}*
+DECIMAL        {DIGITO}+\.{DIGITO}*
 COMENTARIO_LINHA \/\/[^\n]*
 COMENTARIO_BLOCO \/\*([^*]|\*+[^*/])*\*+\/
-STRING_LITERAL \"[^"]*\"
+PALAVRA_LITERAL \"[^"]*\"
+CARACTERE_LITERAL   '[^']'
+
 
 /* Seção de Regras */
 %%
 [ \t]+         { /* Ignorar espaços em branco e tabulações */ }
-\n             { line_count++; }
+\n             { /* Apenas consome a nova linha, yylineno é incrementado automaticamente */ }
 {COMENTARIO_LINHA} { /* Ignora comentário de linha */ }
 {COMENTARIO_BLOCO} { /* Ignora comentário de bloco */ }
 
-"if"           { return T_IF; }
-"else"         { return T_ELSE; }
-"while"        { return T_WHILE; }
-"int"          { return T_TINT; }
-"float"        { return T_TFLOAT; }
-"return"       { return T_RETURN; }
+"se"           { return T_SE; }
+"senao"        { return T_SENAO; }
+"enquanto"     { return T_ENQUANTO; }
+"inteiro"      { return T_INTEIRO_KEYWORD; }
+"decimal"      { return T_DECIMAL_KEYWORD; }
+"retorno"      { return T_RETORNO; }
+"caractere"    { return T_CARACTERE_KEYWORD; }
 
-{INTEIRO}      { yylval = atoi(yytext); return T_INTEGER; }
-{FLOAT}        { return T_FLOAT; }
-{STRING_LITERAL} { return T_STRING; }
+{INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO; }
+{DECIMAL}        { return T_DECIMAL; }
+{PALAVRA_LITERAL} { return T_PALAVRA; }
+{CARACTERE_LITERAL} { return T_LITERAL_CARACTERE; }
 
-{ID}           { yylval = get_symbol_position(yytext); return T_ID; }
+{ID}           { yylval = get_symbol_position(yytext); if (yylval != -1) return T_ID; /* Ignora o ID se a tabela estiver cheia */ }
 
 "=="           { return T_OP_IGUALDADE; }
 "!="           { return T_OP_DIFERENTE; }
-"<"            { return T_OP_MENOR; }
-">"            { return T_OP_MAIOR; }
 "<="           { return T_OP_MENOR_IGUAL; }
 ">="           { return T_OP_MAIOR_IGUAL; }
-
+"<"            { return T_OP_MENOR; }
+">"            { return T_OP_MAIOR; }
 "+"            { return T_OP_SOMA; }
-"-"            { return T_OP_SUBTRACAO; }
-"*"            { return T_OP_MULTIPLICACAO; }
-"/"            { return T_OP_DIVISAO; }
+"-"            { return T_OP_SUB; }
+"*"            { return T_OP_MULT; }
+"/"            { return T_OP_DIV; }
 "="            { return T_OP_ATRIBUICAO; }
 
-";"            { return T_SEP_PONTOVIRGULA; }
-","            { return T_SEP_VIRGULA; }
-"("            { return T_SEP_PARENTESES_ESQ; }
-")"            { return T_SEP_PARENTESES_DIR; }
-"{"            { return T_SEP_CHAVES_ESQ; }
-"}"            { return T_SEP_CHAVES_DIR; }
+";"            { return T_PONTO_VIRGULA; }
+","            { return T_VIRGULA; }
+"("            { return T_PARENTESES_ESQ; }
+")"            { return T_PARENTESES_DIR; }
+"{"            { return T_CHAVES_ESQ; }
+"}"            { return T_CHAVES_DIR; }
 
-.              { printf("Erro Léxico na linha %d: Caractere inesperado '%s'\n", line_count, yytext); return T_UNKNOWN; }
-
+.              {
+                   fprintf(stderr, "Erro Léxico na linha %d: Caractere inesperado '%s'\n", yylineno, yytext);
+                   return T_ERRO;
+               }
 %%
 /* Seção de Código do Usuário */
 
-// Função main para testar o scanner de forma independente
 int main(int argc, char **argv) {
     if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (file) {
-            yyin = file;
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            perror(argv[1]);
+            return 1;
         }
+    } else {
+        // Permite ler da entrada padrão se nenhum arquivo for fornecido
+        yyin = stdin;
     }
 
     int token_id;
     while ((token_id = yylex())) {
-        printf("Token: %d ", token_id);
+        // Usando switch para uma saída mais detalhada e correta
+        switch (token_id) {
+            // Palavras-chave
+            case T_SE:            printf("Token: %d (T_SE)          | Lexema: %s\n", token_id, yytext); break;
+            case T_SENAO:          printf("Token: %d (T_SENAO)        | Lexema: %s\n", token_id, yytext); break;
+            case T_ENQUANTO:         printf("Token: %d (T_ENQUANTO)       | Lexema: %s\n", token_id, yytext); break;
+            case T_INTEIRO_KEYWORD:   printf("Token: %d (T_INTEIRO_KEYWORD) | Lexema: %s\n", token_id, yytext); break;
+            case T_DECIMAL_KEYWORD: printf("Token: %d (T_DECIMAL_KEYWORD)| Lexema: %s\n", token_id, yytext); break;
+            case T_RETORNO:        printf("Token: %d (T_RETORNO)      | Lexema: %s\n", token_id, yytext); break;
+            case T_CARACTERE_KEYWORD:  printf("Token: %d (T_CARACTERE_KEYWORD)| Lexema: %s\n", token_id, yytext); break;
 
-        if (token_id == T_IF) {
-            printf("(IF) | Lexema: %s\n", yytext);
-        } else if (token_id == T_ELSE) {
-            printf("(ELSE) | Lexema: %s\n", yytext);
-        } else if (token_id == T_WHILE) {
-            printf("(WHILE) | Lexema: %s\n", yytext);
-        } else if (token_id == T_TINT) {
-            printf("(TINT) | Lexema: %s\n", yytext);
-        } else if (token_id == T_TFLOAT) {
-            printf("(TFLOAT) | Posição na tabela: %d, Lexema: %s\n", yylval, symbol_table[yylval]);
-        } else if (token_id == T_RETURN) {
-            printf("(RETURN) | Lexema: %s\n", yytext);
-        } else if (token_id == T_INTEGER) {
-            printf("(Integer) | Valor: %d\n", yylval);
-        } else if (token_id == T_FLOAT) {
-            printf("(Float)   | Lexema: %s\n", yytext);
-        } else if (token_id == T_STRING) {
-            printf("(String)  | Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_IGUALDADE) {
-            printf("(IGUALDADE)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_DIFERENTE) {
-            printf("(DIFERENTE)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_MENOR) {
-            printf("(MENOR)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_MAIOR) {
-            printf("(MAIOR)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_MENOR_IGUAL) {
-            printf("(MENOR_IGUAL)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_MAIOR_IGUAL) {
-            printf("(MAIOR_IGUAL)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_SOMA) {
-            printf("(SOMA)| Lexema: %s\n", yytext);
-        } else if (token_id == T_OP_ATRIBUICAO) {
-            printf("(ATRIBUIÇÃO)| Lexema: %s\n", yytext);
-        }  else if (token_id == T_OP_SUBTRACAO) {
-            printf("(SUBTRAÇÃO)| Lexema: %s\n", yytext);
-        }  else if (token_id == T_OP_MULTIPLICACAO) {
-            printf("(MULTIPLICAÇÃO)| Lexema: %s\n", yytext);
-        }  else if (token_id == T_OP_DIVISAO) {
-            printf("(DIVISÃO)| Lexema: %s\n", yytext);
-        } else if (token_id == T_SEP_PONTOVIRGULA) {
-            printf("(PONTO E VIRGULA)| Lexema: %s\n", yytext);
-        } else if (token_id == T_SEP_VIRGULA) {
-            printf("(VIRGULA)| Lexema: %s\n", yytext);              
-	} else if (token_id == T_SEP_PARENTESES_ESQ) {
-            printf("(PARENTESES ESQUERDO)| Lexema: %s\n", yytext);
-	} else if (token_id == T_SEP_PARENTESES_DIR) {
-            printf("(PARENTESES DIREITO)| Lexema: %s\n", yytext);
-        } else if (token_id == T_SEP_CHAVES_ESQ) {
-            printf("(CHAVES ESQUERDA)| Lexema: %s\n", yytext);
-        } else if (token_id == T_SEP_CHAVES_DIR) {
-            printf("(CHAVES DIREITA)| Lexema: %s\n", yytext);
+            // Identificadores e Literais
+            case T_ID:            printf("Token: %d (T_ID)          | Posição: %d, Lexema: %s\n", token_id, yylval, symbol_table[yylval]); break;
+            case T_INTEIRO:       printf("Token: %d (T_INTEIRO)     | Valor: %d\n", token_id, yylval); break;
+            case T_DECIMAL:         printf("Token: %d (T_DECIMAL)       | Lexema: %s\n", token_id, yytext); break;
+            case T_PALAVRA:        printf("Token: %d (T_PALAVRA)      | Lexema: %s\n", token_id, yytext); break;
+            case T_LITERAL_CARACTERE:  printf("Token: %d (T_LITERAL_CARACTERE)| Lexema: %s\n", token_id, yytext); break;
+
+            // Operadores
+            case T_OP_IGUALDADE:  printf("Token: %d (T_OP_IGUALDADE)| Lexema: %s\n", token_id, yytext); break;
+            case T_OP_DIFERENTE:  printf("Token: %d (T_OP_DIFERENTE)| Lexema: %s\n", token_id, yytext); break;
+            case T_OP_MENOR:      printf("Token: %d (T_OP_MENOR)    | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_MAIOR:      printf("Token: %d (T_OP_MAIOR)    | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_MENOR_IGUAL:printf("Token: %d (T_OP_MENOR_IGUAL)| Lexema: %s\n", token_id, yytext); break;
+            case T_OP_MAIOR_IGUAL:printf("Token: %d (T_OP_MAIOR_IGUAL)| Lexema: %s\n", token_id, yytext); break;
+            case T_OP_SOMA:       printf("Token: %d (T_OP_SOMA)     | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_SUB:        printf("Token: %d (T_OP_SUB)      | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_MULT:       printf("Token: %d (T_OP_MULT)     | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_DIV:        printf("Token: %d (T_OP_DIV)      | Lexema: %s\n", token_id, yytext); break;
+            case T_OP_ATRIBUICAO: printf("Token: %d (T_OP_ATRIBUICAO)| Lexema: %s\n", token_id, yytext); break;
+
+            // Separadores
+            case T_PONTO_VIRGULA:  printf("Token: %d (T_PONTO_VIRGULA)| Lexema: %s\n", token_id, yytext); break;
+            case T_VIRGULA:        printf("Token: %d (T_VIRGULA)      | Lexema: %s\n", token_id, yytext); break;
+            case T_PARENTESES_ESQ: printf("Token: %d (T_PARENTESES_ESQ)| Lexema: %s\n", token_id, yytext); break;
+            case T_PARENTESES_DIR: printf("Token: %d (T_PARENTESES_DIR)| Lexema: %s\n", token_id, yytext); break;
+            case T_CHAVES_ESQ:     printf("Token: %d (T_CHAVES_ESQ)   | Lexema: %s\n", token_id, yytext); break;
+            case T_CHAVES_DIR:     printf("Token: %d (T_CHAVES_DIR)   | Lexema: %s\n", token_id, yytext); break;
+
+            case T_ERRO:
+                // A mensagem de erro já foi impressa para stderr
+                break;
+            default:
+                // Este caso não deve ocorrer se todos os tokens forem tratados
+                printf("Token não reconhecido no main: %d\n", token_id);
+                break;
         }
     }
 
-    // Adicione este trecho para imprimir a tabela de símbolos
     printf("\n\n--- Tabela de Símbolos Final ---\n");
     printf("Posição | Identificador\n");
     printf("-----------------------------\n");
@@ -203,12 +186,15 @@ int main(int argc, char **argv) {
     }
     printf("-----------------------------\n\n");
 
-
     // Libera a memória alocada para a tabela de símbolos
     for (int i = 0; i < symbol_count; i++) {
         free(symbol_table[i]);
     }
+    
+    // Fecha o arquivo se ele foi aberto
+    if (yyin != stdin) {
+        fclose(yyin);
+    }
 
     return 0;
-
 }
