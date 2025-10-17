@@ -11,14 +11,15 @@ typedef enum {
     // Palavras-chave
     T_SE_KEYWORD = 258, T_SENAO_KEYWORD, T_ENQUANTO_KEYWORD, T_ATE_KEYWORD, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_DEVOLVA_KEYWORD,
     T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_IMPRIMA_KEYWORD, T_RECEBA_KEYWORD, 
-    T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD,
+    T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD, T_FATO_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
-    T_INTEIRO,
-    T_DECIMAL,
-    T_PALAVRA,
-    T_LITERAL_CARACTERE,
+    T_INTEIRO_LITERAL,
+    T_DECIMAL_LITERAL,
+    T_PALAVRA_LITERAL,
+    T_CARACTERE_LITERAL,
+    T_FATO_LITERAL,
 
     // Operadores
     T_OP_IGUALDADE, T_OP_DIFERENTE, T_OP_MENOR, T_OP_MAIOR, T_OP_MENOR_IGUAL,
@@ -72,7 +73,7 @@ CARACTERE_LITERAL   '[^']'
 /* Seção de Regras */
 %%
 [ \t]+         { /* Ignorar espaços em branco e tabulações */ }
-\n             { /* Apenas consome a nova linha, yylineno é incrementado automaticamente */ }
+\n             { printf("\n"); } // Melhora a saída
 {COMENTARIO_LINHA} { /* Ignora comentário de linha */ }
 {COMENTARIO_BLOCO} { /* Ignora comentário de bloco */ }
 
@@ -93,10 +94,14 @@ CARACTERE_LITERAL   '[^']'
 "ou"           { return T_OU_KEYWORD; }
 "nao"          { return T_NAO_KEYWORD; }
 
-{INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO; }
-{DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL; } // Copia de yytext para o auxiliar yyltext
-{PALAVRA_LITERAL} { strcpy(yyltext, yytext); return T_PALAVRA; }
-{CARACTERE_LITERAL} { strcpy(yyltext, yytext); return T_LITERAL_CARACTERE; }
+"fato"         { return T_FATO_KEYWORD; }
+
+{INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO_LITERAL; }
+{DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL_LITERAL; } // Copia de yytext para o auxiliar yyltext
+{PALAVRA_LITERAL} { strcpy(yyltext, yytext); return T_PALAVRA_LITERAL; }
+{CARACTERE_LITERAL} { strcpy(yyltext, yytext); return T_CARACTERE_LITERAL; }
+"real"         { strcpy(yyltext, yytext); return T_FATO_LITERAL; }
+"fake"         { strcpy(yyltext, yytext); return T_FATO_LITERAL; }
 
 {ID}           { yylval = get_symbol_position(yytext); if (yylval != -1) return T_ID; /* Ignora o ID se a tabela estiver cheia */ }
 
@@ -158,13 +163,15 @@ int main(int argc, char **argv) {
             case T_E_KEYWORD:         printf("<e> "); break;
             case T_OU_KEYWORD:        printf("<ou> "); break;
             case T_NAO_KEYWORD:       printf("<nao> "); break;
+            case T_FATO_KEYWORD:      printf("<fato> "); break;
 
             // Identificadores e Literais
             case T_ID:                printf("<id, %d> ", yylval); break;
-            case T_INTEIRO:           printf("<inteiro, %d> ", yylval); break;
-            case T_DECIMAL:           printf("<decimal, %s> ", yyltext); break;
-            case T_PALAVRA:           printf("<palavra, %s> ", yyltext); break;
-            case T_LITERAL_CARACTERE: printf("<caractere, %s> ", yyltext); break;
+            case T_INTEIRO_LITERAL:           printf("<inteiro, %d> ", yylval); break;
+            case T_DECIMAL_LITERAL:           printf("<decimal, %s> ", yyltext); break;
+            case T_PALAVRA_LITERAL:           printf("<palavra, %s> ", yyltext); break;
+            case T_CARACTERE_LITERAL: printf("<caractere, %s> ", yyltext); break;
+            case T_FATO_LITERAL:              printf("<fato, %s> ", yyltext); break;
 
             // Operadores e separadores
             case T_OP_IGUALDADE:      printf("<==> "); break;
