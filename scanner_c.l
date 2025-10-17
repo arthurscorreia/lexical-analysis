@@ -10,7 +10,7 @@ typedef enum {
 
     // Palavras-chave
     T_SE = 258, T_SENAO, T_ENQUANTO, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_RETORNO,
-    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD,
+    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_ESCREVA_KEYWORD, T_RECEBA_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
@@ -83,6 +83,9 @@ CARACTERE_LITERAL   '[^']'
 "retorno"      { return T_RETORNO; }
 "caractere"    { return T_CARACTERE_KEYWORD; }
 "palavra"      { return T_PALAVRA_KEYWORD; }
+"vazio"        { return T_VAZIO_KEYWORD; }
+"escreva"      { return T_ESCREVA_KEYWORD; }
+"receba"       { return T_RECEBA_KEYWORD; }
 
 {INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO; }
 {DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL; } // Copia de yytext para o auxiliar yyltext
@@ -142,6 +145,10 @@ int main(int argc, char **argv) {
             case T_RETORNO:           printf("<retorno> "); break;
             case T_CARACTERE_KEYWORD: printf("<caractere> "); break;
             case T_PALAVRA_KEYWORD:   printf("<palavra> "); break;
+            case T_VAZIO_KEYWORD:     printf("<vazio> "); break;
+            case T_ESCREVA_KEYWORD:    printf("<escreva> "); break;
+            case T_RECEBA_KEYWORD:     printf("<receba> "); break;
+
 
             // Identificadores e Literais
             case T_ID:                printf("<id, %d> ", yylval); break;
