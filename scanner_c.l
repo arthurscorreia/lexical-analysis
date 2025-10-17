@@ -11,7 +11,7 @@ typedef enum {
     // Palavras-chave
     T_SE_KEYWORD = 258, T_SENAO_KEYWORD, T_ENQUANTO_KEYWORD, T_ATE_KEYWORD, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_DEVOLVA_KEYWORD,
     T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_IMPRIMA_KEYWORD, T_RECEBA_KEYWORD, 
-    T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD, T_FATO_KEYWORD,
+    T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD, T_FATO_KEYWORD, T_SERPENTE_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
@@ -89,6 +89,7 @@ CARACTERE_LITERAL   '[^']'
 "vazio"        { return T_VAZIO_KEYWORD; }
 "imprima"      { return T_IMPRIMA_KEYWORD; }
 "receba"       { return T_RECEBA_KEYWORD; }
+"serpente"     { return T_SERPENTE_KEYWORD; }
 
 "e"            { return T_E_KEYWORD; }
 "ou"           { return T_OU_KEYWORD; }
@@ -164,6 +165,7 @@ int main(int argc, char **argv) {
             case T_OU_KEYWORD:        printf("<ou> "); break;
             case T_NAO_KEYWORD:       printf("<nao> "); break;
             case T_FATO_KEYWORD:      printf("<fato> "); break;
+            case T_SERPENTE_KEYWORD:  printf("<serpente> "); break;
 
             // Identificadores e Literais
             case T_ID:                printf("<id, %d> ", yylval); break;
