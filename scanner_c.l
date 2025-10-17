@@ -9,15 +9,15 @@ typedef enum {
     T_EOF = 0,
 
     // Palavras-chave
-    T_SE_KEYWORD = 258, T_SENAO_KEYWORD, T_ENQUANTO_KEYWORD, T_ATE_KEYWORD, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_DEVOLVA_KEYWORD,
-    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_IMPRIMA_KEYWORD, T_RECEBA_KEYWORD, 
+    T_SE_KEYWORD = 258, T_SENAO_KEYWORD, T_ENQUANTO_KEYWORD, T_ATE_KEYWORD, T_INTEIRO_KEYWORD, T_QUEBRADO_KEYWORD, T_DEVOLVA_KEYWORD,
+    T_CARACTERE_KEYWORD, T_TEXTO_KEYWORD, T_VAZIO_KEYWORD, T_IMPRIMA_KEYWORD, T_RECEBA_KEYWORD, 
     T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD, T_FATO_KEYWORD, T_SERPENTE_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
     T_INTEIRO_LITERAL,
-    T_DECIMAL_LITERAL,
-    T_PALAVRA_LITERAL,
+    T_QUEBRADO_LITERAL,
+    T_TEXTO_LITERAL,
     T_CARACTERE_LITERAL,
     T_FATO_LITERAL,
 
@@ -64,10 +64,10 @@ DIGITO         [0-9]
 LETRA          [a-zA-Z_]
 ID             {LETRA}({LETRA}|{DIGITO})*
 INTEIRO        {DIGITO}+
-DECIMAL        {DIGITO}+\.{DIGITO}+
+QUEBRADO        {DIGITO}+\.{DIGITO}+
 COMENTARIO_LINHA \/\/[^\n]*
 COMENTARIO_BLOCO \/\*([^*]|\*+[^*/])*\*+\/
-PALAVRA_LITERAL \"[^"]*\"
+TEXTO_LITERAL \"[^"]*\"
 CARACTERE_LITERAL   '[^']'
 
 /* Seção de Regras */
@@ -82,10 +82,10 @@ CARACTERE_LITERAL   '[^']'
 "enquanto"     { return T_ENQUANTO_KEYWORD; }
 "ate"          { return T_ATE_KEYWORD; }
 "inteiro"      { return T_INTEIRO_KEYWORD; }
-"decimal"      { return T_DECIMAL_KEYWORD; }
+"quebrado"      { return T_QUEBRADO_KEYWORD; }
 "devolva"      { return T_DEVOLVA_KEYWORD; }
 "caractere"    { return T_CARACTERE_KEYWORD; }
-"palavra"      { return T_PALAVRA_KEYWORD; }
+"texto"      { return T_TEXTO_KEYWORD; }
 "vazio"        { return T_VAZIO_KEYWORD; }
 "imprima"      { return T_IMPRIMA_KEYWORD; }
 "receba"       { return T_RECEBA_KEYWORD; }
@@ -98,8 +98,8 @@ CARACTERE_LITERAL   '[^']'
 "fato"         { return T_FATO_KEYWORD; }
 
 {INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO_LITERAL; }
-{DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL_LITERAL; } // Copia de yytext para o auxiliar yyltext
-{PALAVRA_LITERAL} { strcpy(yyltext, yytext); return T_PALAVRA_LITERAL; }
+{QUEBRADO}      { strcpy(yyltext, yytext); return T_QUEBRADO_LITERAL; } // Copia de yytext para o auxiliar yyltext
+{TEXTO_LITERAL} { strcpy(yyltext, yytext); return T_TEXTO_LITERAL; }
 {CARACTERE_LITERAL} { strcpy(yyltext, yytext); return T_CARACTERE_LITERAL; }
 "real"         { strcpy(yyltext, yytext); return T_FATO_LITERAL; }
 "fake"         { strcpy(yyltext, yytext); return T_FATO_LITERAL; }
@@ -154,10 +154,10 @@ int main(int argc, char **argv) {
             case T_ENQUANTO_KEYWORD:  printf("<enquanto> "); break;
             case T_ATE_KEYWORD:       printf("<ate> "); break;
             case T_INTEIRO_KEYWORD:   printf("<inteiro> "); break;
-            case T_DECIMAL_KEYWORD:   printf("<decimal> "); break;
+            case T_QUEBRADO_KEYWORD:   printf("<quebrado> "); break;
             case T_DEVOLVA_KEYWORD:   printf("<devolva> "); break;
             case T_CARACTERE_KEYWORD: printf("<caractere> "); break;
-            case T_PALAVRA_KEYWORD:   printf("<palavra> "); break;
+            case T_TEXTO_KEYWORD:   printf("<texto> "); break;
             case T_VAZIO_KEYWORD:     printf("<vazio> "); break;
             case T_IMPRIMA_KEYWORD:   printf("<imprima> "); break;
             case T_RECEBA_KEYWORD:    printf("<receba> "); break;
@@ -170,8 +170,8 @@ int main(int argc, char **argv) {
             // Identificadores e Literais
             case T_ID:                printf("<id, %d> ", yylval); break;
             case T_INTEIRO_LITERAL:           printf("<inteiro, %d> ", yylval); break;
-            case T_DECIMAL_LITERAL:           printf("<decimal, %s> ", yyltext); break;
-            case T_PALAVRA_LITERAL:           printf("<palavra, %s> ", yyltext); break;
+            case T_QUEBRADO_LITERAL:           printf("<quebrado, %s> ", yyltext); break;
+            case T_TEXTO_LITERAL:           printf("<texto, %s> ", yyltext); break;
             case T_CARACTERE_LITERAL: printf("<caractere, %s> ", yyltext); break;
             case T_FATO_LITERAL:              printf("<fato, %s> ", yyltext); break;
 
