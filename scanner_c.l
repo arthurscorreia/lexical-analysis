@@ -9,8 +9,9 @@ typedef enum {
     T_EOF = 0,
 
     // Palavras-chave
-    T_SE = 258, T_SENAO, T_ENQUANTO, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_RETORNO,
-    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_ESCREVA_KEYWORD, T_RECEBA_KEYWORD,
+    T_SE_KEYWORD = 258, T_SENAO_KEYWORD, T_ENQUANTO_KEYWORD, T_ATE_KEYWORD, T_INTEIRO_KEYWORD, T_DECIMAL_KEYWORD, T_DEVOLVA_KEYWORD,
+    T_CARACTERE_KEYWORD, T_PALAVRA_KEYWORD, T_VAZIO_KEYWORD, T_IMPRIMA_KEYWORD, T_RECEBA_KEYWORD, 
+    T_E_KEYWORD, T_OU_KEYWORD, T_NAO_KEYWORD,
 
     // Identificadores e Literais
     T_ID,
@@ -75,17 +76,22 @@ CARACTERE_LITERAL   '[^']'
 {COMENTARIO_LINHA} { /* Ignora comentário de linha */ }
 {COMENTARIO_BLOCO} { /* Ignora comentário de bloco */ }
 
-"se"           { return T_SE; }
-"senao"        { return T_SENAO; }
-"enquanto"     { return T_ENQUANTO; }
+"se"           { return T_SE_KEYWORD; }
+"senao"        { return T_SENAO_KEYWORD; }
+"enquanto"     { return T_ENQUANTO_KEYWORD; }
+"ate"          { return T_ATE_KEYWORD; }
 "inteiro"      { return T_INTEIRO_KEYWORD; }
 "decimal"      { return T_DECIMAL_KEYWORD; }
-"retorno"      { return T_RETORNO; }
+"devolva"      { return T_DEVOLVA_KEYWORD; }
 "caractere"    { return T_CARACTERE_KEYWORD; }
 "palavra"      { return T_PALAVRA_KEYWORD; }
 "vazio"        { return T_VAZIO_KEYWORD; }
-"escreva"      { return T_ESCREVA_KEYWORD; }
+"imprima"      { return T_IMPRIMA_KEYWORD; }
 "receba"       { return T_RECEBA_KEYWORD; }
+
+"e"            { return T_E_KEYWORD; }
+"ou"           { return T_OU_KEYWORD; }
+"nao"          { return T_NAO_KEYWORD; }
 
 {INTEIRO}      { yylval = atoi(yytext); return T_INTEIRO; }
 {DECIMAL}      { strcpy(yyltext, yytext); return T_DECIMAL; } // Copia de yytext para o auxiliar yyltext
@@ -114,7 +120,7 @@ CARACTERE_LITERAL   '[^']'
 "}"            { return T_CHAVES_DIR; }
 
 .              {
-                   fprintf(stderr, "Erro Léxico na linha %d: Caractere inesperado '%s'\n", yylineno, yytext);
+                   fprintf(stderr, "Erro Léxico: Caractere inesperado '%s'\n", yytext);
                    return T_ERRO;
                }
 %%
@@ -137,18 +143,21 @@ int main(int argc, char **argv) {
         // Usando switch para uma saída mais detalhada e correta
         switch (token_id) {
             // Palavras-chave
-            case T_SE:                printf("<se> "); break;
-            case T_SENAO:             printf("<senao> "); break;
-            case T_ENQUANTO:          printf("<enquanto> "); break;
+            case T_SE_KEYWORD:        printf("<se> "); break;
+            case T_SENAO_KEYWORD:     printf("<senao> "); break;
+            case T_ENQUANTO_KEYWORD:  printf("<enquanto> "); break;
+            case T_ATE_KEYWORD:       printf("<ate> "); break;
             case T_INTEIRO_KEYWORD:   printf("<inteiro> "); break;
             case T_DECIMAL_KEYWORD:   printf("<decimal> "); break;
-            case T_RETORNO:           printf("<retorno> "); break;
+            case T_DEVOLVA_KEYWORD:   printf("<devolva> "); break;
             case T_CARACTERE_KEYWORD: printf("<caractere> "); break;
             case T_PALAVRA_KEYWORD:   printf("<palavra> "); break;
             case T_VAZIO_KEYWORD:     printf("<vazio> "); break;
-            case T_ESCREVA_KEYWORD:    printf("<escreva> "); break;
-            case T_RECEBA_KEYWORD:     printf("<receba> "); break;
-
+            case T_IMPRIMA_KEYWORD:   printf("<imprima> "); break;
+            case T_RECEBA_KEYWORD:    printf("<receba> "); break;
+            case T_E_KEYWORD:         printf("<e> "); break;
+            case T_OU_KEYWORD:        printf("<ou> "); break;
+            case T_NAO_KEYWORD:       printf("<nao> "); break;
 
             // Identificadores e Literais
             case T_ID:                printf("<id, %d> ", yylval); break;
