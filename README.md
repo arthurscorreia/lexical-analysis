@@ -6,37 +6,37 @@ This project implements a **lexical analyzer** for a simplified programming lang
 
 ### Tipagem e Variáveis (Tipagem Estática)
 
-- [ ] Definir a palavra-chave para declaração de variáveis numéricas **inteiras**.
-- [ ] Definir a palavra-chave para declaração de variáveis de **ponto flutuante**.
+- [X] Definir a palavra-chave para declaração de variáveis numéricas **inteiras**.
+- [X] Definir a palavra-chave para declaração de variáveis de **ponto flutuante**.
 - [ ] Definir a sintaxe para declaração e inicialização de **vetores** do tipo numérico.
-- [ ] Definir a palavra-chave para declaração de variáveis **booleanas**.
+- [X] Definir a palavra-chave para declaração de variáveis **booleanas**.
 
 ### Acessos e Atribuições (Expressões Aritméticas)
 
-- [ ] Implementar a sintaxe de **atribuição** simples (ex: `x = 20;`).
-- [ ] Implementar **expressões aritméticas** com números pré-definidos na atribuição (ex: `y = 1.5 + 2.0;`).
-- [ ] Implementar expressões aritméticas com **variáveis** na atribuição (ex: `z = x * y;`).
+- [X] Implementar a sintaxe de **atribuição** simples (ex: `x = 20;`).
+- [X] Implementar **expressões aritméticas** com números pré-definidos na atribuição (ex: `y = 1.5 + 2.0;`).
+- [X] Implementar expressões aritméticas com **variáveis** na atribuição (ex: `z = x * y;`).
 - [ ] Implementar a sintaxe para **acesso** individual a elementos do vetor (ex: `arr[0]`).
 - [ ] Implementar a sintaxe para **atribuição** individual a elementos do vetor (ex: `arr[i] = x - 5;`).
-- [ ] Implementar suporte para **chamadas de função** dentro de expressões aritméticas (ex: `resultado = funcao_soma(a, b);`).
+- [X] Implementar suporte para **chamadas de função** dentro de expressões aritméticas (ex: `resultado = funcao_soma(a, b);`).
 
 ### Estruturas de Controle
 
-- [ ] Definir a sintaxe para **operações de comparação** (igual, diferente, maior, menor, etc.).
-- [ ] Implementar o desvio **condicional simples** (o `if` básico).
-- [ ] Implementar o desvio **condicional composto** (o `if-else`).
-- [ ] Implementar o comando de **repetição** (o `while` ou `for` com condição de comparação).
+- [X] Definir a sintaxe para **operações de comparação** (igual, diferente, maior, menor, etc.).
+- [X] Implementar o desvio **condicional simples** (o `if` básico).
+- [X] Implementar o desvio **condicional composto** (o `if-else`).
+- [X] Implementar o comando de **repetição** (o `while` ou `for` com condição de comparação).
 
 ### Funções (Com Retorno Explícito)
 
-- [ ] Definir a sintaxe para **criação de funções** (o tipo de retorno deve ser o primeiro).
-    - [ ] Definir o tipo de retorno **inteiro** (ex: `int func(...)`).
-    - [ ] Definir o tipo de retorno **ponto flutuante** (ex: `float func(...)`).
-    - [ ] Definir o tipo de retorno
-- [ ] Definir sintaxe para **print** e **input**.
+- [X] Definir a sintaxe para **criação de funções** (o tipo de retorno deve ser o primeiro).
+    - [X] Definir o tipo de retorno **inteiro** (ex: `int func(...)`).
+    - [X] Definir o tipo de retorno **ponto flutuante** (ex: `float func(...)`).
+    - [X] Definir o tipo de retorno
+- [X] Definir sintaxe para **print** e **input**.
 
 ### Tokens
-- [ ] Impressão correta no formato de analisador léxico.
+- [X] Impressão correta no formato de analisador léxico.
 - [ ] Impressão somente após o usuário definir.
 
 
