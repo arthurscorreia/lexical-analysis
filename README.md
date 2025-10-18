@@ -2,57 +2,67 @@
 
 This project implements a **lexical analyzer** for a simplified programming language, developed as part of the **MATA61 - Compilers** course at the **Federal University of Bahia (UFBA)**.
 
-## To-do List
+---
 
-### Tipagem e Variáveis (Tipagem Estática)
+## Structure and Functionality
 
-- [X] Definir a palavra-chave para declaração de variáveis numéricas **inteiras**.
-- [X] Definir a palavra-chave para declaração de variáveis de **ponto flutuante**.
-- [ ] Definir a sintaxe para declaração e inicialização de **vetores** do tipo numérico.
-- [X] Definir a palavra-chave para declaração de variáveis **booleanas**.
+The main file of the project is **`scanner_.l`**, which includes:
 
-### Acessos e Atribuições (Expressões Aritméticas)
+- **C definitions** (token enumeration, symbol table, helper functions)  
+- **Regular expression definitions** for pattern recognition  
+- **Matching rules** that associate regex patterns with token types  
+- **A main function (`main`)** for executing and displaying tokenized output
 
-- [X] Implementar a sintaxe de **atribuição** simples (ex: `x = 20;`).
-- [X] Implementar **expressões aritméticas** com números pré-definidos na atribuição (ex: `y = 1.5 + 2.0;`).
-- [X] Implementar expressões aritméticas com **variáveis** na atribuição (ex: `z = x * y;`).
-- [ ] Implementar a sintaxe para **acesso** individual a elementos do vetor (ex: `arr[0]`).
-- [ ] Implementar a sintaxe para **atribuição** individual a elementos do vetor (ex: `arr[i] = x - 5;`).
-- [X] Implementar suporte para **chamadas de função** dentro de expressões aritméticas (ex: `resultado = funcao_soma(a, b);`).
+---
 
-### Estruturas de Controle
+## Recognized Tokens
 
-- [X] Definir a sintaxe para **operações de comparação** (igual, diferente, maior, menor, etc.).
-- [X] Implementar o desvio **condicional simples** (o `if` básico).
-- [X] Implementar o desvio **condicional composto** (o `if-else`).
-- [X] Implementar o comando de **repetição** (o `while` ou `for` com condição de comparação).
+### Keywords
+| Keyword | Description |
+|---------|-------------|
+| `se`, `senao` | Conditional structures |
+| `enquanto`, `ate` | Loop structures |
+| `inteiro`, `quebrado`, `caractere`, `texto`, `vazio` | Data types |
+| `devolva` | Return statement |
+| `imprima`, `receba` | Input/output operations |
+| `e`, `ou`, `nao` | Logical operators |
+| `fato` | Boolean constants |
+| `serpente`| Vectors |
 
-### Funções (Com Retorno Explícito)
+---
 
-- [X] Definir a sintaxe para **criação de funções** (o tipo de retorno deve ser o primeiro).
-    - [X] Definir o tipo de retorno **inteiro** (ex: `int func(...)`).
-    - [X] Definir o tipo de retorno **ponto flutuante** (ex: `float func(...)`).
-    - [X] Definir o tipo de retorno
-- [X] Definir sintaxe para **print** e **input**.
+### Operators
+| Operator | Token | Meaning |
+|-----------|--------|---------|
+| `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators |
+| `+`, `-`, `*`, `/` | Arithmetic operators |
+| `=` | Assignment operator |
 
-### Tokens
-- [X] Impressão correta no formato de analisador léxico.
-- [ ] Impressão somente após o usuário definir.
+---
 
+### Separators
+| Symbol | Token |
+|---------|--------|
+| `;`, `,` | Delimiters |
+| `(`, `)` | Parentheses |
+| `{`, `}` | Block delimiters |
 
-## Dictionary
+---
 
-- **int** = **inteiro**.
-- **float** = **decimal**.
-- **string** = **palavra**.
-- **char** = **caractere**.
-- **bool** = ----.
-- **vetores** = ----.
-- **void** = **vazio**.
+## Compilation and Execution
 
-- **if** = **se**.
-- **else** = **senao**.
-- **while** = **enquanto**.
-- **return** = **retorno**.
-- **print** = **escreva**.
-- **input** = **receba**.
+### Requirements
+- **Flex** installed → `sudo apt install flex`
+- **GCC** compiler → `sudo apt install build-essential`
+
+### Build and Run
+
+1. Generate the C source from the Flex file:
+   ```bash
+   flex scanner_.l
+2. Compile the generated source:
+   ```bash
+   gcc lex.yy.c -o analyzer
+3. Run the analyzer:
+   ```bash
+   ./analyzer
