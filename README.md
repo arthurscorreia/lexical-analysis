@@ -6,7 +6,7 @@ This project implements a **lexical analyzer** for a simplified programming lang
 
 ## Structure and Functionality
 
-The main file of the project is **`scanner_.l`**, which includes:
+The main file of the project is **`scanner_c.l`**, which includes:
 
 - **C definitions** (token enumeration, symbol table, helper functions)  
 - **Regular expression definitions** for pattern recognition  
@@ -32,8 +32,8 @@ The main file of the project is **`scanner_.l`**, which includes:
 ---
 
 ### Operators
-| Operator | Token | Meaning |
-|-----------|--------|---------|
+| Operator | Token |
+|-----------|--------|
 | `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators |
 | `+`, `-`, `*`, `/` | Arithmetic operators |
 | `=` | Assignment operator |
@@ -59,10 +59,21 @@ The main file of the project is **`scanner_.l`**, which includes:
 
 1. Generate the C source from the Flex file:
    ```bash
-   flex scanner_.l
+   flex scanner_c.l
 2. Compile the generated source:
    ```bash
    gcc lex.yy.c -o analyzer
 3. Run the analyzer:
    ```bash
    ./analyzer
+
+---
+
+## Documentation
+The complete project report (in Portuguese) can be found below:
+[➡️ Project Report (PDF)](./relatorio.pdf)
+
+---
+
+## Authors
+Arthur Correia, Matheus Dias, and Pedro Marcos Estrela.
