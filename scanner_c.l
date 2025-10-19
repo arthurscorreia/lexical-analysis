@@ -73,7 +73,7 @@ CARACTERE_LITERAL   '[^']'
 /* Seção de Regras */
 %%
 [ \t]+         { /* Ignorar espaços em branco e tabulações */ }
-\n             { printf("\n"); } // Melhora a saída
+\n             {  } // Melhora a saída
 {COMENTARIO_LINHA} { /* Ignora comentário de linha */ }
 {COMENTARIO_BLOCO} { /* Ignora comentário de bloco */ }
 
@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
     }
 
     // Quando EOF, imprime tudo
-    printf("Análise Léxica:\n");
+    printf("\nAnálise Léxica:\n");
     printf("%s\n", output_buffer);
 
     printf("\nTabela de Símbolos:\n");

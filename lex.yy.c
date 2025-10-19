@@ -873,7 +873,7 @@ case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
 #line 76 "scanner_c.l"
-{ printf("\n"); } // Melhora a saída
+{  } // Melhora a saída
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -2127,9 +2127,9 @@ int main(int argc, char **argv) {
         yyin = stdin;
     }
 
-    // Buffer grande para armazenar toda a saída antes de imprimir
-    char output_buffer[65536] = ""; // 64 KB deve ser suficiente para a maioria dos casos
-    char temp[512]; // Buffer temporário para cada token
+    // Buffer para armazenar toda a saída antes de imprimir
+    char output_buffer[65536] = ""; 
+    char temp[512];
 
     int token_id;
     while ((token_id = yylex())) {
@@ -2192,11 +2192,11 @@ int main(int argc, char **argv) {
                 break;
         }
 
-        strcat(output_buffer, temp); // adiciona a saída acumulada
+        strcat(output_buffer, temp); // Adiciona temp em output_buffer
     }
 
-    // Quando EOF (Ctrl+D), imprime tudo
-    printf("Análise Léxica:\n");
+    // Quando EOF, imprime tudo
+    printf("\nAnálise Léxica:\n");
     printf("%s\n", output_buffer);
 
     printf("\nTabela de Símbolos:\n");
