@@ -2123,62 +2123,67 @@ int main(int argc, char **argv) {
             return 1;
         }
     } else {
-         // Permite ler da entrada padrão se nenhum arquivo for fornecido
+        // Permite ler da entrada padrão se nenhum arquivo for fornecido
         yyin = stdin;
     }
 
+    // Buffer grande para armazenar toda a saída antes de imprimir
+    char output_buffer[65536] = ""; // 64 KB deve ser suficiente para a maioria dos casos
+    char temp[512]; // Buffer temporário para cada token
+
     int token_id;
     while ((token_id = yylex())) {
-        // Usando switch para uma saída mais detalhada e correta
+        // Em vez de imprimir direto, salvamos em 'temp' e depois concatenamos em 'output_buffer'
         switch (token_id) {
+            // Usando switch para uma saída mais detalhada e correta
             // Palavras-chave
-            case T_SE_KEYWORD:        printf("<se> "); break;
-            case T_SENAO_KEYWORD:     printf("<senao> "); break;
-            case T_ENQUANTO_KEYWORD:  printf("<enquanto> "); break;
-            case T_ATE_KEYWORD:       printf("<ate> "); break;
-            case T_INTEIRO_KEYWORD:   printf("<inteiro> "); break;
-            case T_QUEBRADO_KEYWORD:   printf("<quebrado> "); break;
-            case T_DEVOLVA_KEYWORD:   printf("<devolva> "); break;
-            case T_CARACTERE_KEYWORD: printf("<caractere> "); break;
-            case T_TEXTO_KEYWORD:   printf("<texto> "); break;
-            case T_VAZIO_KEYWORD:     printf("<vazio> "); break;
-            case T_IMPRIMA_KEYWORD:   printf("<imprima> "); break;
-            case T_RECEBA_KEYWORD:    printf("<receba> "); break;
-            case T_E_KEYWORD:         printf("<e> "); break;
-            case T_OU_KEYWORD:        printf("<ou> "); break;
-            case T_NAO_KEYWORD:       printf("<nao> "); break;
-            case T_FATO_KEYWORD:      printf("<fato> "); break;
-            case T_SERPENTE_KEYWORD:  printf("<serpente> "); break;
+            case T_SE_KEYWORD:        sprintf(temp, "<se> "); break;
+            case T_SENAO_KEYWORD:     sprintf(temp, "<senao> "); break;
+            case T_ENQUANTO_KEYWORD:  sprintf(temp, "<enquanto> "); break;
+            case T_ATE_KEYWORD:       sprintf(temp, "<ate> "); break;
+            case T_INTEIRO_KEYWORD:   sprintf(temp, "<inteiro> "); break;
+            case T_QUEBRADO_KEYWORD:  sprintf(temp, "<quebrado> "); break;
+            case T_DEVOLVA_KEYWORD:   sprintf(temp, "<devolva> "); break;
+            case T_CARACTERE_KEYWORD: sprintf(temp, "<caractere> "); break;
+            case T_TEXTO_KEYWORD:     sprintf(temp, "<texto> "); break;
+            case T_VAZIO_KEYWORD:     sprintf(temp, "<vazio> "); break;
+            case T_IMPRIMA_KEYWORD:   sprintf(temp, "<imprima> "); break;
+            case T_RECEBA_KEYWORD:    sprintf(temp, "<receba> "); break;
+            case T_E_KEYWORD:         sprintf(temp, "<e> "); break;
+            case T_OU_KEYWORD:        sprintf(temp, "<ou> "); break;
+            case T_NAO_KEYWORD:       sprintf(temp, "<nao> "); break;
+            case T_FATO_KEYWORD:      sprintf(temp, "<fato> "); break;
+            case T_SERPENTE_KEYWORD:  sprintf(temp, "<serpente> "); break;
 
             // Identificadores e Literais
-            case T_ID:                printf("<id, %d> ", yylval); break;
-            case T_INTEIRO_LITERAL:           printf("<inteiro, %d> ", yylval); break;
-            case T_QUEBRADO_LITERAL:           printf("<quebrado, %s> ", yyltext); break;
-            case T_TEXTO_LITERAL:           printf("<texto, %s> ", yyltext); break;
-            case T_CARACTERE_LITERAL: printf("<caractere, %s> ", yyltext); break;
-            case T_FATO_LITERAL:              printf("<fato, %s> ", yyltext); break;
+            case T_ID:                sprintf(temp, "<id, %d> ", yylval); break;
+            case T_INTEIRO_LITERAL:   sprintf(temp, "<inteiro, %d> ", yylval); break;
+            case T_QUEBRADO_LITERAL:  sprintf(temp, "<quebrado, %s> ", yyltext); break;
+            case T_TEXTO_LITERAL:     sprintf(temp, "<texto, %s> ", yyltext); break;
+            case T_CARACTERE_LITERAL: sprintf(temp, "<caractere, %s> ", yyltext); break;
+            case T_FATO_LITERAL:      sprintf(temp, "<fato, %s> ", yyltext); break;
 
             // Operadores e separadores
-            case T_OP_IGUALDADE:      printf("<==> "); break;
-            case T_OP_DIFERENTE:      printf("<!=> "); break;
-            case T_OP_MENOR:          printf("<<> "); break;
-            case T_OP_MAIOR:          printf("<>> "); break;
-            case T_OP_MENOR_IGUAL:    printf("<= "); break;
-            case T_OP_MAIOR_IGUAL:    printf(">= "); break;
-            case T_OP_SOMA:           printf("<+> "); break;
-            case T_OP_SUB:            printf("<-> "); break;
-            case T_OP_MULT:           printf("<*> "); break;
-            case T_OP_DIV:            printf("</> "); break;
-            case T_OP_ATRIBUICAO:     printf("<=> "); break;
+            case T_OP_IGUALDADE:      sprintf(temp, "<==> "); break;
+            case T_OP_DIFERENTE:      sprintf(temp, "<!=> "); break;
+            case T_OP_MENOR:          sprintf(temp, "<<> "); break;
+            case T_OP_MAIOR:          sprintf(temp, "<>> "); break;
+            case T_OP_MENOR_IGUAL:    sprintf(temp, "<<= > "); break;
+            case T_OP_MAIOR_IGUAL:    sprintf(temp, "<>= > "); break;
+            case T_OP_SOMA:           sprintf(temp, "<+> "); break;
+            case T_OP_SUB:            sprintf(temp, "<-> "); break;
+            case T_OP_MULT:           sprintf(temp, "<*> "); break;
+            case T_OP_DIV:            sprintf(temp, "</> "); break;
+            case T_OP_ATRIBUICAO:     sprintf(temp, "<=> "); break;
 
-            case T_PONTO_VIRGULA:     printf("<;> "); break;
-            case T_VIRGULA:           printf("<,> "); break;
-            case T_PARENTESES_ESQ:    printf("<(> "); break;
-            case T_PARENTESES_DIR:    printf("<)> "); break;
-            case T_CHAVES_ESQ:        printf("<{> "); break;
-            case T_CHAVES_DIR:        printf("<}> "); break;
+            case T_PONTO_VIRGULA:     sprintf(temp, "<;>\n"); break;
+            case T_VIRGULA:           sprintf(temp, "<,> "); break;
+            case T_PARENTESES_ESQ:    sprintf(temp, "<(> "); break;
+            case T_PARENTESES_DIR:    sprintf(temp, "<)> "); break;
+            case T_CHAVES_ESQ:        sprintf(temp, "<{> "); break;
+            case T_CHAVES_DIR:        sprintf(temp, "<}> "); break;
 
-            case T_ERRO:
+             case T_ERRO:
                 // A mensagem de erro já foi impressa para stderr
                 break;
             default:
@@ -2186,17 +2191,21 @@ int main(int argc, char **argv) {
                 printf("Token não reconhecido no main: %d\n", token_id);
                 break;
         }
+
+        strcat(output_buffer, temp); // adiciona a saída acumulada
     }
 
-    printf("\n\n--- Tabela de Símbolos Final ---\n");
+    // Quando EOF (Ctrl+D), imprime tudo
+    printf("Análise Léxica:\n");
+    printf("%s\n", output_buffer);
+
+    printf("\nTabela de Símbolos:\n");
     printf("Posição | Identificador\n");
-    printf("-----------------------------\n");
-    for (int i = 0; i < symbol_count; i++) {
-        printf("%-7d | %s\n", i, symbol_table[i]);
-    }
-    printf("-----------------------------\n\n");
 
-    // Libera a memória alocada para a tabela de símbolos
+    for (int i = 0; i < symbol_count; i++) {
+        printf("[%d] %s\n", i, symbol_table[i]);
+    }
+
     for (int i = 0; i < symbol_count; i++) {
         free(symbol_table[i]);
     }
