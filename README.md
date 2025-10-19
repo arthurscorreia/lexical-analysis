@@ -35,8 +35,7 @@ The main file of the project is **`scanner_c.l`**, which includes:
 | Operator | Token |
 |-----------|--------|
 | `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators |
-| `+`, `-`, `*`, `/` | Arithmetic operators |
-| `=` | Assignment operator |
+| `+`, `-`, `*`, `/`, `=` | Arithmetic operators |
 
 ---
 
