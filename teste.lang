@@ -1,0 +1,25 @@
+// Inicialização de funções e variáveis
+inteiro main() {
+    inteiro a = 10;
+    quebrado b = 10.0;
+    caractere c = 'c';
+    texto d = "ola mundo";
+
+    // Teste de controle de fluxo e operadores
+    se (a >= 1) {
+        a = a - 1; // Incremento
+    } 
+    senao {
+        devolva "a eh 0";
+    }
+
+    // Teste de loops
+    enquanto (b > 5) {
+        b = b - 1;
+    }
+
+    // Erro léxico na próxima linha com '$'
+    inteiro x $;
+
+    devolva 0;
+}

@@ -65,7 +65,9 @@ The main file of the project is **`scanner_c.l`**, which includes:
 3. Run the analyzer:
    ```bash
    ./analyzer
-
+4. Or run with the analyzer with a test file:
+   ```bash
+   ./analyzer teste.lang
 ---
 
 ## Documentation
